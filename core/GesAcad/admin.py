@@ -25,20 +25,23 @@ class UsuarioAdminForm(forms.ModelForm):
 @admin.register(Usuarios)
 class UsuariosAdmin(admin.ModelAdmin):
     form = UsuarioAdminForm
+    list_display = ["nombre", "apellido", "id_perfil"]
 
     def save_model(self, request, obj, form, change):
-        try:
-            identify_hasher(obj.password)
-        except:
-            obj.password = make_password(obj.password)
-        
+        password = form.cleaned_data.get('password')
+
+        if password:
+            obj.password_hash = make_password(password)
         super().save_model(request, obj, form, change)
 
 @admin.register(Perfiles)
 class PerfilesAdmin(admin.ModelAdmin):
     list_display = ["id_perfil", "descripcion"]
 
-admin.site.register(Materias)
+@admin.register(Materias)
+class MateriasAdmin(admin.ModelAdmin):
+    list_display=["nombre", "anio", "cuatrimestre"]
+
 admin.site.register(Examenes)
 admin.site.register(Carreras)
 admin.site.register(Carrera_Materia)
