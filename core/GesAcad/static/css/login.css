@@ -1,0 +1,12 @@
+body {
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+}
+
+.login-card {
+    width: 350px;
+    border-radius: 15px;
+}
+
+.card h3 {
+    font-weight: bold;
+}
