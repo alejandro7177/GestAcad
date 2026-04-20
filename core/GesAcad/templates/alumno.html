@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Materias</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/alumno.css' %}">
+</head>
+
+<body>
+
+  <h2 class="titulo">Materias de la carrera</h2>
+  {% for anio, materias in materias_agrupadas %}
+  <h3 class="titulo">{{ anio }}° Año</h3>
+
+  <div class="contenedor">
+    {% for materia in materias %}
+    <div class="materia">
+      <span class="nombre">{{ materia.nombre }}</span>
+
+      {% if materia.id_materia in inscriptas_alta %}
+      <a class="btn baja" href="{% url 'toggle_inscripcion' materia.id_materia %}">
+        Dar de baja
+      </a>
+      {% else %}
+      <a class="btn inscribir" href="{% url 'toggle_inscripcion' materia.id_materia %}">
+        Inscribirse
+      </a>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% endfor %}
+
+</body>
+
+</html>

@@ -1,16 +1,18 @@
 from django import forms
-from django.contrib.auth.hashers import make_password, identify_hasher
 from django.contrib import admin
+from django.contrib.auth.hashers import make_password
+
 from .models import (
-    Usuarios,
-    Perfiles,
-    Materias,
-    Examenes,
-    Carreras,
     Carrera_Materia,
+    Carreras,
+    Examenes,
     Inscripcion_Examen,
-    Inscripcion_Materia
-    )
+    Inscripcion_Materia,
+    Materias,
+    Perfiles,
+    Usuarios,
+)
+
 
 class UsuarioAdminForm(forms.ModelForm):
     password = forms.CharField(
@@ -20,12 +22,12 @@ class UsuarioAdminForm(forms.ModelForm):
 
     class Meta:
         model = Usuarios
-        exclude = ['password_hash']
+        exclude = ('password_hash',)
 
 @admin.register(Usuarios)
 class UsuariosAdmin(admin.ModelAdmin):
     form = UsuarioAdminForm
-    list_display = ["nombre", "apellido", "id_perfil"]
+    list_display = ("nombre", "apellido", "id_perfil")
 
     def save_model(self, request, obj, form, change):
         password = form.cleaned_data.get('password')
@@ -36,11 +38,11 @@ class UsuariosAdmin(admin.ModelAdmin):
 
 @admin.register(Perfiles)
 class PerfilesAdmin(admin.ModelAdmin):
-    list_display = ["id_perfil", "descripcion"]
+    list_display = ("id_perfil", "descripcion")
 
 @admin.register(Materias)
 class MateriasAdmin(admin.ModelAdmin):
-    list_display=["nombre", "anio", "cuatrimestre"]
+    list_display= ("nombre", "anio", "cuatrimestre")
 
 admin.site.register(Examenes)
 admin.site.register(Carreras)
