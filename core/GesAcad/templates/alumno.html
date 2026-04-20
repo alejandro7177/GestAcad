@@ -1,38 +1,39 @@
-<!DOCTYPE html>
-<html>
+{% extends 'base.html' %}
 
-<head>
-  <title>Materias</title>
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/alumno.css' %}">
-</head>
+{% block title %}Materias{% endblock %}
 
-<body>
+{% block content %}
 
-  <h2 class="titulo">Materias de la carrera</h2>
-  {% for anio, materias in materias_agrupadas %}
-  <h3 class="titulo">{{ anio }}° Año</h3>
+{% for anio, materias in materias_agrupadas %}
 
-  <div class="contenedor">
-    {% for materia in materias %}
-    <div class="materia">
-      <span class="nombre">{{ materia.nombre }}</span>
+  <div class="mb-4">
 
-      {% if materia.id_materia in inscriptas_alta %}
-      <a class="btn baja" href="{% url 'toggle_inscripcion' materia.id_materia %}">
-        Dar de baja
-      </a>
-      {% else %}
-      <a class="btn inscribir" href="{% url 'toggle_inscripcion' materia.id_materia %}">
-        Inscribirse
-      </a>
-      {% endif %}
+    <h3 class="text-center mb-3">{{ anio }}° Año</h3>
+
+    <div class="card mx-auto" style="max-width: 600px;">
+      <ul class="list-group list-group-flush">
+
+        {% for materia in materias %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ materia.nombre }}
+
+          {% if materia.id_materia in inscriptas_alta %}
+            <a class="btn btn-danger btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}">
+              Dar de baja
+            </a>
+          {% else %}
+            <a class="btn btn-success btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}">
+              Inscribirse
+            </a>
+          {% endif %}
+        </li>
+        {% endfor %}
+
+      </ul>
     </div>
-    {% endfor %}
+
   </div>
+  
+{% endfor %}
 
-  {% endfor %}
-
-</body>
-
-</html>
+{% endblock %}
