@@ -24,6 +24,8 @@ def login_controler(request):
     return render(request, 'login.html')
 
 def alumno_controller(request):
+    if request.session.get("user_id") is None:
+        return redirect('login')
     from datetime import datetime
     from itertools import groupby
 
@@ -34,7 +36,7 @@ def alumno_controller(request):
     else:
         cuatrimestre = 2
 
-    materias = Materias.objects.filter(cuatrimestre=1).order_by("anio", "cuatrimestre", "nombre")
+    materias = Materias.objects.filter(cuatrimestre=cuatrimestre).order_by("anio", "cuatrimestre", "nombre")
     user_id = request.session.get('user_id')
     inscripciones =Inscripcion_Materia.objects.filter(id_usuario=user_id, estado="Alta")
 
