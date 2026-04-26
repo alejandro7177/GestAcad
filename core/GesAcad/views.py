@@ -1,7 +1,16 @@
 from django.contrib.auth import hashers
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Inscripcion_Materia, Materias, Usuarios
+from .models import Carrera_Materia, Inscripcion_Materia, Materias, Usuarios, Carreras
+
+carrera = Carreras.objects.get(id_carrera=2)
+
+def login_valid(func):
+    def wrapper(request, *args, **kwargs):
+        if 'user_id' not in request.session:
+            return redirect('login')
+        return func(request, *args, **kwargs)
+    return wrapper
 
 
 def login_controler(request):
@@ -23,54 +32,42 @@ def login_controler(request):
             return render(request, 'login.html', {'error':'El usuario no existe!'})
     return render(request, 'login.html')
 
+@login_valid
 def alumno_controller(request):
-    if request.session.get("user_id") is None:
-        return redirect('login')
     from datetime import datetime
-    from itertools import groupby
 
 
     today = datetime.now()
-    if today.month <= 6:
-        cuatrimestre = 1
+    usuario = Usuarios.get(request.session.get('user_id'))
+    carreras = Carreras.carreras_alumno(alumno=usuario)
+    
+    id_carrera = request.GET.get('carrera')
+
+    if id_carrera:
+        carrera = carreras.filter(id_carrera=id_carrera).first()
+
+        materias_agrupadas = Materias.materias_alumnos_ord(
+            cuatrimestre= 1 if today.month <= 6 else 2,
+            carrera=carrera
+        )
     else:
-        cuatrimestre = 2
+        materias_agrupadas = None
 
-    materias = Materias.objects.filter(cuatrimestre=cuatrimestre).order_by("anio", "cuatrimestre", "nombre")
-    user_id = request.session.get('user_id')
-    inscripciones =Inscripcion_Materia.objects.filter(id_usuario=user_id, estado="Alta")
-
-    incripciones_id = list(inscripciones.values_list("id_materia", flat=True))
-
-    materias_agrupadas = {}
-    for anio, grupo in groupby(materias, key=lambda x:x.anio):
-        materias_agrupadas[anio] = list(grupo)
-    materias_agrupadas = list(materias_agrupadas.items())
-    print(f"{materias_agrupadas=}")
-    if 'user_id' not in request.session:
-        return redirect('login')
+    inscripciones_alta = Inscripcion_Materia.id_materias_alta(usuario)
+    
     return render(request, 'alumno.html',{
         'materias_agrupadas':materias_agrupadas,
-        'inscriptas_alta': incripciones_id
+        'inscriptas_alta': inscripciones_alta,
+        'carreras':carreras,
+        'carrera_seleccionada': id_carrera
     })
 
 def toggle_inscripcion(request, materia_id):
     materia = get_object_or_404(Materias, id_materia=materia_id)
-    user_id = request.session.get('user_id')
-    user = Usuarios.objects.filter(id_usuario=user_id).first()
+    usuario = Usuarios.get(id=request.session.get('user_id'))
+    id_carrera = request.GET.get('carrera')
 
-    insc, created = Inscripcion_Materia.objects.get_or_create(
-        id_usuario = user,
-        id_materia = materia,
-        defaults={"estado":"Alta"}
-    )
+    Inscripcion_Materia.dar_alta_baja_Inscripcion_Materia(materia=materia, usuario=usuario)
 
-    if not created:
-        if insc.estado == "Alta":
-            insc.estado = "Baja"
-        else:
-            insc.estado = "Alta"
-        insc.save()
-
-    return redirect('alumno')
+    return redirect(f'/alumno?carrera={id_carrera}')
 

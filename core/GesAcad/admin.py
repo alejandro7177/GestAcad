@@ -6,6 +6,7 @@ from .models import (
     Carrera_Materia,
     Carreras,
     Examenes,
+    Inscripcion_Carrera,
     Inscripcion_Examen,
     Inscripcion_Materia,
     Materias,
@@ -43,6 +44,10 @@ class PerfilesAdmin(admin.ModelAdmin):
 @admin.register(Materias)
 class MateriasAdmin(admin.ModelAdmin):
     list_display= ("nombre", "anio", "cuatrimestre")
+
+@admin.register(Inscripcion_Carrera)
+class Inscripcion_Carrera_Admin(admin.ModelAdmin):
+    list_display = ("id_usuario", "id_carrera", "estado")
 
 admin.site.register(Examenes)
 admin.site.register(Carreras)

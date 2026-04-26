@@ -3,37 +3,55 @@
 {% block title %}Materias{% endblock %}
 
 {% block content %}
-
-{% for anio, materias in materias_agrupadas %}
-
-  <div class="mb-4">
-
-    <h3 class="text-center mb-3">{{ anio }}° Año</h3>
-
-    <div class="card mx-auto" style="max-width: 600px;">
-      <ul class="list-group list-group-flush">
-
-        {% for materia in materias %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          {{ materia.nombre }}
-
-          {% if materia.id_materia in inscriptas_alta %}
-            <a class="btn btn-danger btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}">
-              Dar de baja
-            </a>
-          {% else %}
-            <a class="btn btn-success btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}">
-              Inscribirse
-            </a>
-          {% endif %}
-        </li>
-        {% endfor %}
-
-      </ul>
-    </div>
-
+<div class="row">
+  <div class="col text-end">
+    <form method="get">
+        <select name="carrera" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+            <option value="">-- Seleccionar carrera --</option>
+            
+            {% for c in carreras %}
+                <option value="{{ c.id_carrera }}"
+                    {% if c.id_carrera|stringformat:"s" == carrera_seleccionada %}
+                        selected
+                    {% endif %}
+                >
+                    {{ c.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
   </div>
-  
-{% endfor %}
+</div>
+{% if materias_agrupadas %}
+  {% for anio, materias in materias_agrupadas.items %}
+
+    <div class="mb-4">
+
+      <h3 class="text-center mb-3">{{ anio }}° Año</h3>
+
+      <div class="card mx-auto" style="max-width: 600px;">
+        <ul class="list-group list-group-flush">
+
+          {% for materia in materias %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ materia.nombre }}
+
+            {% if materia.id_materia in inscriptas_alta %}
+        <a class="btn btn-danger btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}?carrera={{ carrera_seleccionada }}">
+                Dar de baja
+              </a>
+            {% else %}
+              <a class="btn btn-success btn-sm" href="{% url 'toggle_inscripcion' materia.id_materia %}?carrera={{ carrera_seleccionada }}">
+                Inscribirse
+              </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
 
 {% endblock %}
