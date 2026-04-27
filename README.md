@@ -78,5 +78,5 @@ python manage.py runserver
 Ingresar en http://127.0.0.1:8000
 
 ## DER
-![DER](./img/DER.jpeg)
+![DER](./img/GestAcadDER.png)
 
