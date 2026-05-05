@@ -5,6 +5,22 @@ from .models import Carrera_Materia, Inscripcion_Materia, Materias, Usuarios, Ca
 
 carrera = Carreras.objects.get(id_carrera=2)
 
+
+def obtener_materias_agrupadas(carreras, id_carrera):
+    from datetime import datetime
+    today = datetime.now()
+
+    if id_carrera:
+        carrera = carreras.filter(id_carrera=id_carrera).first()
+
+        return Materias.materias_alumnos_ord(
+            cuatrimestre= 1 if today.month <= 6 else 2,
+            carrera=carrera
+        )
+    else:
+        return None
+
+
 def login_valid(func):
     def wrapper(request, *args, **kwargs):
         if 'user_id' not in request.session:
@@ -32,35 +48,24 @@ def login_controler(request):
             return render(request, 'login.html', {'error':'El usuario no existe!'})
     return render(request, 'login.html')
 
+
 @login_valid
 def alumno_controller(request):
-    from datetime import datetime
-
-
-    today = datetime.now()
-    usuario = Usuarios.get(request.session.get('user_id'))
-    carreras = Carreras.carreras_alumno(alumno=usuario)
+    usuario = Usuarios.get(request.session.get('user_id'))   
     
+    carreras = Carreras.carreras_alumno(alumno=usuario)
     id_carrera = request.GET.get('carrera')
 
-    if id_carrera:
-        carrera = carreras.filter(id_carrera=id_carrera).first()
-
-        materias_agrupadas = Materias.materias_alumnos_ord(
-            cuatrimestre= 1 if today.month <= 6 else 2,
-            carrera=carrera
-        )
-    else:
-        materias_agrupadas = None
-
+    materias_agrupadas = obtener_materias_agrupadas(carreras, id_carrera)
     inscripciones_alta = Inscripcion_Materia.id_materias_alta(usuario)
-    
+
     return render(request, 'alumno.html',{
         'materias_agrupadas':materias_agrupadas,
         'inscriptas_alta': inscripciones_alta,
         'carreras':carreras,
         'carrera_seleccionada': id_carrera
     })
+
 
 def toggle_inscripcion(request, materia_id):
     materia = get_object_or_404(Materias, id_materia=materia_id)
