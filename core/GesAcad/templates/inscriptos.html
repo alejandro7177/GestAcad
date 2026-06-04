@@ -1,0 +1,76 @@
+{% extends "base_docente.html" %}
+
+{% block title %}Inscriptos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Inscriptos</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form method="post">
+                {% csrf_token %}
+
+                <ul class="list-group">
+
+                    {% for inscripto in inscriptos %}
+                    <li class="list-group-item list-group-item-primary">
+                        <div class="row align-items-center">
+
+                            <div class="col-md-8">
+                                <div class="fw-bold">
+                                    {{ inscripto.id_usuario.nombre }}
+                                    {{ inscripto.id_usuario.apellido }}
+                                </div>
+
+                                <small class="text-muted">
+                                    {{ inscripto.id_usuario.dni }}
+                                </small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <select
+                                    class="form-select form-select-sm"
+                                    name="estado_{{ inscripto.id_inscripcion_materia }}">
+
+                                    <option value="Alta"
+                                        {% if inscripto.estado == "Alta" %}selected{% endif %}>
+                                        Pendiente
+                                    </option>
+
+                                    <option value="Aprobado"
+                                        {% if inscripto.estado == "Aprobado" %}selected{% endif %}>
+                                        Aprobado
+                                    </option>
+
+                                    <option value="Desaprobado"
+                                        {% if inscripto.estado == "Desaprobado" %}selected{% endif %}>
+                                        Desaprobado
+                                    </option>
+
+                                </select>
+                            </div>
+
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

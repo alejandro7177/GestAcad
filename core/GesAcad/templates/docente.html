@@ -1,0 +1,19 @@
+{% extends "base_docente.html" %}
+
+{% block title %}Docente {% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col mb-4 mt-4">
+    <h3 class="text-center mb-3">Mis Materias</h3>
+  </div>
+</div>
+<div class="row">
+  <ul class="list-group">
+    {%for materia in materias %}
+  <li class="list-group-item list-group-item-primary d-flex justify-content-between align-items-center">{{ materia.id_materia.nombre }}
+      <a class="btn btn-primary btn-sm" href={% url "inscriptos" materia.id_materia.id_materia %}>Ver Inscriptos</a>
+  </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}
