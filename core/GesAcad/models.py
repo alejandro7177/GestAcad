@@ -120,7 +120,13 @@ class Carrera_Materia(models.Model):
 class Inscripcion_Materia(models.Model):
     id_inscripcion_materia = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
-    estado = models.CharField(max_length=20)
+    estado = models.CharField(
+            max_length=20,
+            choices=[
+                ("Alta", "Pendiente"),
+                ("Aprobado", "Aprobado"),
+                ("Desaprobado", "Desaprobado"),
+            ])
     id_materia = models.ForeignKey(Materias, on_delete=models.CASCADE)
 
     @classmethod
@@ -148,7 +154,18 @@ class Inscripcion_Materia(models.Model):
         except Exception as e:
             print(e)
             return False
-
+    
+    @classmethod
+    def inscriptos_por_materia(cls, materia:Materias, usuario:Usuarios):
+        try:
+            inscripciones = cls.objects.filter(
+                    id_materia=materia,
+                    estado__in=["Alta", "Aprobado", "Desaprobado"]
+                ).exclude(id_usuario=usuario)
+            return inscripciones
+        except Exception as e:
+            print(e)
+            return None
     class Meta:
         db_table = "Inscripcion_Materia"
         
