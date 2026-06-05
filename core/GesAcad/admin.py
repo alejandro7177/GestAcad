@@ -17,13 +17,13 @@ from .models import (
 
 class UsuarioAdminForm(forms.ModelForm):
     password = forms.CharField(
-        label="Password",
-        widget=forms.PasswordInput(render_value=True)
+        label="Password", widget=forms.PasswordInput(render_value=True)
     )
 
     class Meta:
         model = Usuarios
-        exclude = ('password_hash',)
+        exclude = ("password_hash",)
+
 
 @admin.register(Usuarios)
 class UsuariosAdmin(admin.ModelAdmin):
@@ -31,23 +31,27 @@ class UsuariosAdmin(admin.ModelAdmin):
     list_display = ("nombre", "apellido", "id_perfil")
 
     def save_model(self, request, obj, form, change):
-        password = form.cleaned_data.get('password')
+        password = form.cleaned_data.get("password")
 
         if password:
             obj.password_hash = make_password(password)
         super().save_model(request, obj, form, change)
 
+
 @admin.register(Perfiles)
 class PerfilesAdmin(admin.ModelAdmin):
     list_display = ("id_perfil", "descripcion")
 
+
 @admin.register(Materias)
 class MateriasAdmin(admin.ModelAdmin):
-    list_display= ("nombre", "anio", "cuatrimestre")
+    list_display = ("nombre", "anio", "cuatrimestre")
+
 
 @admin.register(Inscripcion_Carrera)
 class Inscripcion_Carrera_Admin(admin.ModelAdmin):
     list_display = ("id_usuario", "id_carrera", "estado")
+
 
 admin.site.register(Examenes)
 admin.site.register(Carreras)
