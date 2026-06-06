@@ -49,8 +49,15 @@ class MateriasAdmin(admin.ModelAdmin):
 class Inscripcion_Carrera_Admin(admin.ModelAdmin):
     list_display = ("id_usuario", "id_carrera", "estado")
 
+@admin.register(Inscripcion_Materia)
+class Inscripcion_Materia_Admin(admin.ModelAdmin):
+    list_display= ("id_usuario", "id_materia", "estado")
+
+@admin.register(Carrera_Materia)
+class Carrera_Materia_Admin(admin.ModelAdmin):
+    list_display = ("id_materia", "id_carrera")
+
 admin.site.register(Examenes)
 admin.site.register(Carreras)
-admin.site.register(Carrera_Materia)
 admin.site.register(Inscripcion_Examen)
-admin.site.register(Inscripcion_Materia)
+

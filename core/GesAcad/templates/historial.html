@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %} Historial {% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col text-end">
+            <form method="get">
+                <select name="carrera" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+                    <option value="" | hidden>-- Seleccionar carrera --</option>
+                
+                    {% for c in carreras %}
+                        <option value="{{ c.id_carrera }}"
+                        {% if c.id_carrera|stringformat:"s" == carrera_seleccionada %}
+                            selected
+                        {% endif %}
+                        >
+                        {{ c.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    {% if historial %}
+
+        <div class="mx-auto mb-3" style="max-width: 60%;">
+            <h4 class="fw-bold">Mis notas</h4>
+        </div>
+        {% for materia, inscripciones in historial.items %}
+
+            <div class="card mx-auto mb-4" style="max-width: 60%;">
+                <div class="card-header fw-bold">{{ materia.nombre }}</div>
+                <ul class="list-group list-group-flush">
+                    {% for insc in inscripciones %}
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Nota: {{ insc.nota }}</span>
+                            <span>{{ insc.id_examen.fecha|date:"d/m/Y" }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% elif carrera_seleccionada %}
+        <p class="text-center text-muted mt-4">No hay inscripciones a exámenes para esta carrera.</p>
+    {% endif %}
+{% endblock %}

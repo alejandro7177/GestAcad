@@ -48,6 +48,7 @@ def login_controler(request):
                 id_perfil = user.id_perfil.id_perfil
                 request.session['user_id'] = user.id_usuario
                 request.session['perfil_id'] = user.id_perfil.__str__()
+                request.session['nombre'] = user.nombre
                 if id_perfil == 1:
                     return redirect("alumno")
                 return redirect("docente")
@@ -58,6 +59,10 @@ def login_controler(request):
             return render(request, 'login.html', {'error':'El usuario no existe!'})
     return render(request, 'login.html')
 
+
+def logout_controller(request):
+    request.session.flush()
+    return redirect("login")
 
 @login_valid
 @docente_valid
@@ -124,4 +129,17 @@ def toggle_inscripcion(request, materia_id):
     Inscripcion_Materia.dar_alta_baja_Inscripcion_Materia(materia=materia, usuario=usuario)
 
     return redirect(f'/alumno?carrera={id_carrera}')
+
+
+def mostrar_historial(request):
+    usuario = Usuarios.get(request.session.get('user_id'))
+    carreras = Carreras.carreras_alumno(usuario)
+    id_carrera = request.GET.get('carrera')
+    carrera = Carreras.get(id_carrera) 
+
+    return render(request, "historial.html", {
+        "carreras": carreras,
+        "historial": Inscripcion_Examen.obtener_examenes_agrupados(usuario, carrera),
+        "carrera_seleccionada": id_carrera
+    })
 

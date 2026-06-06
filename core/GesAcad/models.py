@@ -174,9 +174,35 @@ class Inscripcion_Examen(models.Model):
     id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
     nota = models.IntegerField()
     estado = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.nota} - {self.id_examen}"
+
+    
+    @classmethod
+    def obtener_examenes_agrupados(cls, usuario: Usuarios, carrera: Carreras) -> dict:
+        inscripciones = cls.objects.filter(
+            id_usuario=usuario,
+            id_examen__id_materia__carreras_rel__id_carrera=carrera
+        ).order_by(
+            "id_examen__id_materia__nombre",  
+            "id_examen__fecha"                
+        ) 
+
+        examenes_agrupados = {}
+        for insc in inscripciones:
+            materia = insc.id_examen.id_materia
+            if materia not in examenes_agrupados:
+                examenes_agrupados[materia] = []
+            examenes_agrupados[materia].append(insc)
+
+        return examenes_agrupados
+
     class Meta:
         constraints = (models.UniqueConstraint(fields=["id_usuario","id_examen"], name="unique_id_usuario_examen"),)
         db_table = "Inscripcion_Examen"
+
+
 
 class Inscripcion_Carrera(models.Model):
     id_usuario= models.ForeignKey(Usuarios, on_delete=models.CASCADE)

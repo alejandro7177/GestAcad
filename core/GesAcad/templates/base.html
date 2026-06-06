@@ -36,7 +36,24 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'historial' %}">
+              Historial Académico
+            </a>
+          </li>
+
         </ul>
+      </div>
+
+      <div class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+              {{request.session.nombre}}
+            </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="{% url 'logout' %}">Cerrar Sesión</a>
+        </li> 
       </div>
 
     </div>
