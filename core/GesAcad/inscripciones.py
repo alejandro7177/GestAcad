@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 
-from .models import Inscripcion_Materia
+from .academico import Materia
+from .models import Inscripcion_Materia as InscriptionMateriaModel
 from .usuario import Usuario
 
 @dataclass
@@ -17,12 +18,27 @@ class Inscripcion(ABC):
         pass
 
 @dataclass
-class Inscripcion_Materia(Inscripcion):
-    def get(self, id):
-        return Inscripcion_Materia.get(id=id)
+class InscripcionMateria(Inscripcion):
+    materia: Materia
+    _model = InscriptionMateriaModel
+    
+    @abstractmethod
+    def get(cls, id):
+        return cls._model.objects.get(id._model)
 
-    def inscripciones_alta(self, usuario:Usuario):
-        return Inscripcion_Materia.objects.filter(
-            id_usuario_id_usuario=usuario.id_usuario,
-            estado = "Alta"
-        )
+    @classmethod
+    def alta_baja_inscripcion(cls, id_usuario: int, id_materia: int):
+        try:   
+            insc, created = cls._model.objects.get_or_create(
+                id_usuario__id_usuario = id_usuario,
+                id_materia__id_materia = id_materia,
+                defaults={"estado":"Alta"}
+            )
+
+            if not created:
+                insc.estado = "Baja" if insc.estado == "Alta" else "Alta"
+                insc.save()
+            return True
+        except Exception as e:
+            print(e)
+            return False

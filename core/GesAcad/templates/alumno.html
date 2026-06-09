@@ -9,13 +9,13 @@
         <select name="carrera" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
             <option value="">-- Seleccionar carrera --</option>
             
-            {% for c in carreras %}
-                <option value="{{ c.id_carrera }}"
-                    {% if c.id_carrera|stringformat:"s" == carrera_seleccionada %}
+            {% for id, c in carreras %}
+                <option value="{{ id }}"
+                    {% if id|stringformat:"s" == carrera_seleccionada %}
                         selected
                     {% endif %}
                 >
-                    {{ c.nombre }}
+                    {{ c }}
                 </option>
             {% endfor %}
         </select>

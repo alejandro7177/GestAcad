@@ -2,31 +2,15 @@ from django.contrib.auth import hashers
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .academico import Materia
+from .inscripciones import InscripcionMateria
 from .usuario import Usuario, Alumno, Docente
 from .models import (
-    Carrera_Materia,
     Inscripcion_Examen,
     Inscripcion_Materia,
     Materias,
     Usuarios,
     Carreras,
 )
-
-
-def obtener_materias_agrupadas(carreras, id_carrera):
-    from datetime import datetime
-
-    today = datetime.now()
-
-    if id_carrera:
-        carrera = carreras.filter(id_carrera=id_carrera).first()
-
-        return Materias.materias_alumnos_ord(
-            cuatrimestre= 1 if today.month <= 6 else 2,
-            carrera=carrera
-        )
-    else:
-        return None
 
 def login_valid(func):
     def wrapper(request, *args, **kwargs):
@@ -103,31 +87,39 @@ def docente_inscriptos(request, materia_id):
 #-----------------------------ALUMNO-------------------------------------------
 @login_valid
 def alumno_controller(request):
-    usuario = Usuarios.get(request.session.get('user_id'))
-    carreras = Carreras.carreras_alumno(alumno=usuario)
-    
-    carreras = Carreras.carreras_alumno(alumno=usuario)
-    id_carrera = request.GET.get('carrera')
+    _alumno = Alumno.get(request.session.get("user_id"))
 
-    materias_agrupadas = obtener_materias_agrupadas(carreras, id_carrera)
-    inscripciones_alta = Inscripcion_Materia.id_materias_alta(usuario)
-
-    return render(request, 'alumno.html',{
-        'materias_agrupadas':materias_agrupadas,
-        'inscriptas_alta': inscripciones_alta,
-        'carreras':carreras,
-        'carrera_seleccionada': id_carrera
-    })
-
-def toggle_inscripcion(request, materia_id):
-    materia = get_object_or_404(Materias, id_materia=materia_id)
-    usuario = Usuarios.get(id=request.session.get("user_id"))
+    if _alumno:
+        carreras = _alumno.obtener_carreras()
     id_carrera = request.GET.get("carrera")
-    
-    if usuario and materia:
-        Inscripcion_Materia.dar_alta_baja_Inscripcion_Materia(
-            materia=materia, usuario=usuario
+
+    materias_agrupadas = Materia.obtener_materias_agrupadas(id_carrera)
+    inscripciones_alta = _alumno.ids_inscripciones_materia()
+    print(f"{inscripciones_alta=}")
+
+    return render(
+        request,
+        "alumno.html",
+        {
+            "materias_agrupadas": materias_agrupadas,
+            "inscriptas_alta": inscripciones_alta,
+            "carreras": carreras,
+            "carrera_seleccionada": id_carrera
+        },
+    )
+@login_valid
+def toggle_inscripcion(request, materia_id):
+    materia = Materia.get(materia_id)
+    usuario = Alumno.get(request.session.get("user_id"))
+    id_carrera = request.GET.get("carrera")
+    print(f"{usuario=}")
+    print(f"{materia=}")
+    if materia and usuario:
+        res = InscripcionMateria.alta_baja_inscripcion(
+            usuario.id_usuario, 
+            materia.id_materia
         )
+        print(f"{res=}")
     
     return redirect(f"/alumno?carrera={id_carrera}")
 

@@ -63,40 +63,6 @@ class Materias(models.Model):
     def __str__(self)->str:
         return f"{self.nombre}"
 
-    @classmethod
-    def get(cls, id:int):
-        return cls.objects.get(id_materia=id)
-    
-    @classmethod
-    def materias_alumno(
-        cls,
-        cuatrimestre: int,
-        carrera: Carreras
-    )->models.QuerySet:
-            
-        return cls.objects.filter(
-            cuatrimestre=cuatrimestre,
-            carreras_rel__id_carrera=carrera
-        )
-    
-    @classmethod
-    def materias_alumnos_ord( 
-        cls,
-        cuatrimestre: int,
-        carrera: Carreras
-    )->dict:
-        from itertools import groupby
-        materias_alumno = cls.materias_alumno(
-            cuatrimestre=cuatrimestre,
-            carrera=carrera
-        )
-        
-        materias_agrupadas = {}
-        for anio, grupo in groupby(materias_alumno, key=lambda x:x.anio):
-            materias_agrupadas[anio] = list(grupo)
-
-        return materias_agrupadas
-
     class Meta:
         db_table = "Materias"
     
@@ -119,11 +85,12 @@ class Carrera_Materia(models.Model):
         db_table = "Carrera_Materia"
 class Inscripcion_Materia(models.Model):
     id_inscripcion_materia = models.AutoField(primary_key=True)
-    id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE, related_name="inscripciones_materias")
     estado = models.CharField(
             max_length=20,
             choices=[
-                ("Alta", "Pendiente"),
+                ("Baja", "Baja"),
+                ("Alta", "Alta"),
                 ("Aprobado", "Aprobado"),
                 ("Desaprobado", "Desaprobado"),
             ])
