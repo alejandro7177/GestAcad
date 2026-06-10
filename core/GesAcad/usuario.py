@@ -8,6 +8,7 @@ from django.contrib.auth import hashers
 from django.db import connection
 
 from .models import Usuarios as UserModel
+from .models import Inscripcion_Materia
 from .observer import Observador, Sujeto, SujetoConcreto
 
 
