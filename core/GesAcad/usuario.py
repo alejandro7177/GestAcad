@@ -130,7 +130,14 @@ class Alumno(Usuario, Observador):
         except Exception as ex:
             print(f"{ex=}")
             return []
-
+    
+    def inscripciones_aprobados(self):
+        return set(
+            Inscripcion_Materia.objects.filter(
+                id_usuario=self.id_usuario,
+                estado="Aprobado"
+            ).values_list("id_materia_id", flat=True)
+        )
     def ids_inscripciones_materia(self):
         res = self.inscripciones_materia()
         if res:

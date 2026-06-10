@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 
+from django.db import connection
+
 from .academico import Materia
 from .models import Inscripcion_Materia as InscriptionMateriaModel
 from .usuario import Usuario
@@ -33,21 +35,16 @@ class InscripcionMateria(Inscripcion):
         return self.materia
 
     @classmethod
-    def alta_baja_inscripcion(cls, id_usuario: int, id_materia: int):
-        try:   
-            insc, created = cls._model.objects.get_or_create(
-                id_usuario__id_usuario = id_usuario,
-                id_materia__id_materia = id_materia,
-                defaults={"estado":"Alta"}
+    def alta_baja_inscripcion(cls, id_usuario, id_materia):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT alta_baja_inscripcion_materia(%s, %s)
+                """,
+                [id_usuario, id_materia]
             )
 
-            if not created:
-                insc.estado = "Baja" if insc.estado == "Alta" else "Alta"
-                insc.save()
-            return insc.estado
-        except Exception as e:
-            print(e)
-            return False
+            return cursor.fetchone()[0]
 
 @dataclass
 class InscripcionCarrera(Inscripcion):

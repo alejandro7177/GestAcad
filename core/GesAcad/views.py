@@ -25,6 +25,7 @@ def login_valid(func):
 
 def docente_valid(func):
     def wrapper(request, *args, **kwargs):
+        print(f"{request.session.get("perfil_id")=}")
         if request.session.get("perfil_id") != "Docente":
             return redirect("login")
         return func(request, *args, **kwargs)
@@ -38,9 +39,11 @@ def login_controler(request):
         password = request.POST["password"]
         
         user, error= Usuario.login(email=username, password=password)
+        print(f"{error=}")
         if error:
             return render(request, "login.html", error)
         if user:
+            print(f"{user.obtenerPerfil()=}")
             request.session["user_id"] = user.id_usuario
             request.session["perfil_id"] = user.obtenerPerfil()
             if user.obtenerPerfil() == "Alumno":
@@ -99,13 +102,14 @@ def alumno_controller(request):
     materias_agrupadas = Materia.obtener_materias_agrupadas(id_carrera)
     inscripciones_alta = _alumno.ids_inscripciones_materia()
     print(f"{inscripciones_alta=}")
-
+    inscriptas_aprobadas = _alumno.inscripciones_aprobados()
     return render(
         request,
         "alumno.html",
         {
             "materias_agrupadas": materias_agrupadas,
             "inscriptas_alta": inscripciones_alta,
+            "inscriptas_aprobadas": inscriptas_aprobadas,
             "carreras": carreras,
             "carrera_seleccionada": id_carrera
         },

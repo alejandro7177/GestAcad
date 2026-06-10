@@ -59,6 +59,10 @@ class Materias(models.Model):
     nombre = models.CharField(max_length=50)
     anio = models.IntegerField()
     cuatrimestre = models.IntegerField()
+    
+    @classmethod
+    def get(cls, id:int):
+        return cls.objects.filter(id_materia=id).first()
 
     def __str__(self)->str:
         return f"{self.nombre}"
