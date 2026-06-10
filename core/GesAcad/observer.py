@@ -37,8 +37,38 @@ Implementación de las interfaces para el proyecto
 
 
 class SujetoConcreto(Sujeto):
-    pass
+    def __init__(self):
+        self._observadores: list[Observador] = []
+        self._estado: str = ""
+
+    def vincular(self, o:Observador) -> None:
+        if o not in self._observadores:
+            self._observadores.append(o)
+
+
+    def desvincular(self, o:Observador) -> None:
+        self._observadores.remove(o)
+
+    
+    def notificar(self) -> None:
+        for observador in self._observadores:
+            observador.actualizar(self)
+
+    
+    def getEstado(self) -> str:
+        return self._estado
+    
+
+    def setEstado(self, estado:str) -> None:
+        self._estado = estado
+        self.notificar()
 
 
 class ObservadorConcreto(Observador):
-    pass
+    def __init__(self):
+        self.estadoObservador: str = ""
+
+    
+    def actualizar(self, subject:Sujeto) -> None:
+        if isinstance(subject, SujetoConcreto):
+            self.estadoObservador = subject.getEstado()

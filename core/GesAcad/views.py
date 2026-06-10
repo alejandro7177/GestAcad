@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.contrib.auth import hashers
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .academico import Materia
 from .inscripciones import InscripcionMateria
+from .observer import SujetoConcreto
 from .usuario import Usuario, Alumno, Docente
 from .models import (
     Inscripcion_Examen,
@@ -40,6 +42,7 @@ def login_controler(request):
             return render(request, "login.html", error)
         if user:
             request.session["user_id"] = user.id_usuario
+            request.session["perfil_id"] = user.obtenerPerfil()
             if user.obtenerPerfil() == "Alumno":
                 return redirect("alumno")
             if user.obtenerPerfil() == "Docente":
@@ -64,9 +67,9 @@ def docente_controller(request):
 @docente_valid
 def docente_inscriptos(request, materia_id):
     docente = Usuarios.get(id=request.session.get("user_id"))
-    materia = Materias.get(id=materia_id)
+    materia = Materia.get(id=materia_id)
     inscriptos_materia = Inscripcion_Materia.inscriptos_por_materia(
-        materia=materia, usuario=docente
+        materia=materia_id, usuario=docente
     )
     if request.session.get("perfil_id") != "Docente":
         return render(request, "inscriptos.html", {"inscriptos": None})
@@ -120,17 +123,32 @@ def toggle_inscripcion(request, materia_id):
             materia.id_materia
         )
         print(f"{res=}")
+
+        sujeto = SujetoConcreto()
+        sujeto.vincular(usuario)
+
+        if res == "Alta":
+            sujeto.setEstado(f"Te inscribiste a {materia.nombre}")
+        else:
+            sujeto.setEstado(f"Te diste de baja de {materia.nombre}")
+
+        messages.info(request, sujeto.getEstado())
     
     return redirect(f"/alumno?carrera={id_carrera}")
 
+@login_valid
 def mostrar_historial(request):
-    usuario = Usuarios.get(request.session.get('user_id'))
-    carreras = Carreras.carreras_alumno(usuario)
-    id_carrera = request.GET.get('carrera')
+    _alumno = Alumno.get(request.session.get('user_id'))
+
+    if _alumno:
+        id_alumno = _alumno.id_usuario
+        carreras = _alumno.obtener_carreras()
+    id_carrera = request.GET.get("carrera")
+    
     carrera = Carreras.get(id_carrera) 
 
     return render(request, "historial.html", {
         "carreras": carreras,
-        "historial": Inscripcion_Examen.obtener_examenes_agrupados(usuario, carrera),
+        "historial": Inscripcion_Examen.obtener_examenes_agrupados(id_alumno, carrera),
         "carrera_seleccionada": id_carrera
     })

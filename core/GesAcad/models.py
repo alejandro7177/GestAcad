@@ -150,7 +150,8 @@ class Inscripcion_Examen(models.Model):
     def obtener_examenes_agrupados(cls, usuario: Usuarios, carrera: Carreras) -> dict:
         inscripciones = cls.objects.filter(
             id_usuario=usuario,
-            id_examen__id_materia__carreras_rel__id_carrera=carrera
+            id_examen__id_materia__carreras_rel__id_carrera=carrera,
+            nota__gte=1
         ).order_by(
             "id_examen__id_materia__nombre",  
             "id_examen__fecha"                

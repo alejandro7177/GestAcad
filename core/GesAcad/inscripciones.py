@@ -44,7 +44,7 @@ class InscripcionMateria(Inscripcion):
             if not created:
                 insc.estado = "Baja" if insc.estado == "Alta" else "Alta"
                 insc.save()
-            return True
+            return insc.estado
         except Exception as e:
             print(e)
             return False

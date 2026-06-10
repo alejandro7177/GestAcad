@@ -8,7 +8,7 @@ from django.contrib.auth import hashers
 from django.db import connection
 
 from .models import Usuarios as UserModel
-from .observer import Observador, Sujeto
+from .observer import Observador, Sujeto, SujetoConcreto
 
 
 @dataclass
@@ -146,8 +146,8 @@ class Alumno(Usuario, Observador):
             return cursor.fetchall()
 
     def actualizar(self, subject: Sujeto) -> None:
-        # implementar lógica del observer
-        pass
+        if isinstance(subject, SujetoConcreto):
+            print(f"[Observer] {self.nombre}: {subject.getEstado()}")
 
 @dataclass
 class Docente(Usuario):
