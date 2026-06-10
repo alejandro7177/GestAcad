@@ -87,6 +87,9 @@ class Usuario(ABC):
     def nombreCompleto(self) -> str:
         return f"{self.nombre} {self.apellido}"
 
+    def actualizar_datos(self, nombre, apellido, email):
+        pass
+
     @abstractmethod
     def obtenerPerfil(self) -> str:
         pass
@@ -146,7 +149,6 @@ class Alumno(Usuario, Observador):
         # implementar lógica del observer
         pass
 
-
 @dataclass
 class Docente(Usuario):
 
@@ -173,3 +175,12 @@ class Docente(Usuario):
 
     def obtenerPerfil(self) -> str:
         return "Docente"
+
+    def materias_asignadas(self):
+        pass
+
+    def listar_alumnos(self,id_materia):
+        pass
+
+    def cargar_nota(self, id_examen, nota):
+        pass

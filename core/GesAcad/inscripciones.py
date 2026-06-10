@@ -17,6 +17,9 @@ class Inscripcion(ABC):
     def get(self, id):
         pass
 
+    def dar_alta_baja(self):
+        pass
+
 @dataclass
 class InscripcionMateria(Inscripcion):
     materia: Materia
@@ -25,6 +28,9 @@ class InscripcionMateria(Inscripcion):
     @abstractmethod
     def get(cls, id):
         return cls._model.objects.get(id._model)
+
+    def obtener_materia(self)->Materia:
+        return self.materia
 
     @classmethod
     def alta_baja_inscripcion(cls, id_usuario: int, id_materia: int):
@@ -42,3 +48,19 @@ class InscripcionMateria(Inscripcion):
         except Exception as e:
             print(e)
             return False
+
+@dataclass
+class InscripcionCarrera(Inscripcion):
+    def obtener_carrera(self):
+        pass
+
+    def dar_baja_carrera(self):
+        pass
+
+@dataclass
+class InscripcionExamen(Inscripcion):
+    def registrar_nota(self, nota:int):
+        pass
+
+    def obtener_examen(self):
+        pass

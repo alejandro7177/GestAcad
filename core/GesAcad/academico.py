@@ -7,11 +7,6 @@ from .models import Materias as MateriaModel
 
 
 @dataclass
-class Carrera:
-    pass
-
-
-@dataclass
 class Materia:
     id_materia : int
     nombre : str
@@ -69,4 +64,19 @@ class Materia:
         return materias_agrupadas
 @dataclass
 class Examen:
-    pass
+    def inscriptos(self):
+        pass
+
+    def publicar_notas(self):
+        pass
+
+@dataclass
+class Carrera:
+    def listar_materias(self):
+        pass
+
+    def materias_por_anio(self, anio:int):
+        pass
+
+    def cantidad_alumnos(self)->int:
+        pass
